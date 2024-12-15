@@ -35,7 +35,7 @@ const salesData = {
   datasets: [
     {
       label: 'Vendas',
-      data: [12, 19, 3, 5, 2, 3],
+      data: [38, 47, 29, 53, 48, 67],
       backgroundColor: 'rgba(53, 162, 235, 0.5)',
     },
   ],
@@ -47,7 +47,6 @@ const stockData = {
     {
       label: 'Quantidade em Estoque',
       data: [28, 37, 55, 26, 60],
-      borderColor: 'rgb(255, 99, 132)',
       backgroundColor: 'rgba(255, 99, 132, 0.5)',
     },
   ],
@@ -114,6 +113,8 @@ export default function Dashboard() {
       month,
       Math.round(salesData.datasets[0].data[index]).toString()
     ])
+
+    // @ts-expect-error: A função autoTable não é reconhecida pelo TypeScript devido à falta de tipagem
     doc.autoTable({
       startY: 130,
       head: [['Mês', 'Vendas']],
@@ -136,6 +137,8 @@ export default function Dashboard() {
       product,
       stockData.datasets[0].data[index]
     ])
+
+    // @ts-expect-error: A função autoTable não é reconhecida pelo TypeScript devido à falta de tipagem
     doc.autoTable({
       startY: 40,
       head: [['Produto', 'Quantidade']],
