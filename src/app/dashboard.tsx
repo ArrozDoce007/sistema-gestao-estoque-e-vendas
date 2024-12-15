@@ -17,6 +17,8 @@ import {
   PointElement
 } from 'chart.js'
 import { Download, RefreshCw } from 'lucide-react'
+import jsPDF from "jspdf";
+import 'jspdf-autotable'
 
 ChartJS.register(
   CategoryScale,
@@ -68,6 +70,47 @@ export default function Dashboard() {
     refreshData()
   }, [])
 
+  const exportToPDF = () => {
+    const doc = new jsPDF()
+
+    // Add title
+    doc.setFontSize(18)
+    doc.text('Relatório de Vendas e Estoque', 14, 22)
+
+    // Add date
+    doc.setFontSize(11)
+    doc.text(`Data: ${new Date().toLocaleDateString()}`, 14, 30)
+
+    // Add sales data
+    doc.setFontSize(14)
+    doc.text('Vendas dos Últimos 6 Meses', 14, 40)
+    const salesTableData = salesData.labels.map((month, index) => [
+      month,
+      salesData.datasets[0].data[index]
+    ])
+    doc.autoTable({
+      startY: 45,
+      head: [['Mês', 'Vendas']],
+      body: salesTableData,
+    })
+
+    // Add stock data
+    doc.setFontSize(14)
+    doc.text('Estoque Atual', 14, doc.lastAutoTable.finalY + 20)
+    const stockTableData = stockData.labels.map((product, index) => [
+      product,
+      stockData.datasets[0].data[index]
+    ])
+    doc.autoTable({
+      startY: doc.lastAutoTable.finalY + 25,
+      head: [['Produto', 'Quantidade']],
+      body: stockTableData,
+    })
+
+    // Save the PDF
+    doc.save('relatorio-vendas-estoque.pdf')
+  }
+
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-3xl font-bold mb-6">Dashboard</h1>
@@ -85,7 +128,7 @@ export default function Dashboard() {
             </>
           )}
         </Button>
-        <Button variant="outline">
+        <Button variant="outline" onClick={exportToPDF}>
           <Download className="mr-2 h-4 w-4" />
           Exportar Relatório
         </Button>
