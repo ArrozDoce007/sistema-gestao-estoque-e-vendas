@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Bar, Line } from 'react-chartjs-2'
+import { Bar } from 'react-chartjs-2'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
@@ -10,7 +10,6 @@ import {
   CategoryScale,
   LinearScale,
   BarElement,
-  LineElement,
   Title,
   Tooltip,
   Legend,
@@ -24,7 +23,6 @@ ChartJS.register(
   CategoryScale,
   LinearScale,
   BarElement,
-  LineElement,
   Title,
   Tooltip,
   Legend,
@@ -48,7 +46,7 @@ const stockData = {
   datasets: [
     {
       label: 'Quantidade em Estoque',
-      data: [50, 30, 40, 20, 60],
+      data: [28, 37, 55, 26, 60],
       borderColor: 'rgb(255, 99, 132)',
       backgroundColor: 'rgba(255, 99, 132, 0.5)',
     },
