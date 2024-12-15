@@ -5,19 +5,19 @@ import { Bar, Line } from 'react-chartjs-2'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
-import { 
-  Chart as ChartJS, 
-  CategoryScale, 
-  LinearScale, 
-  BarElement, 
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
   LineElement,
-  Title, 
-  Tooltip, 
+  Title,
+  Tooltip,
   Legend,
   PointElement
 } from 'chart.js'
 import { Download, RefreshCw } from 'lucide-react'
-import jsPDF from "jspdf";
+import jsPDF from "jspdf"
 import 'jspdf-autotable'
 
 ChartJS.register(
@@ -31,7 +31,7 @@ ChartJS.register(
   PointElement
 )
 
-// Simulated data - in a real application, this would come from your API
+// Dados simulados - em uma aplicação real, isso viria da sua API
 const salesData = {
   labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
   datasets: [
@@ -72,42 +72,83 @@ export default function Dashboard() {
 
   const exportToPDF = () => {
     const doc = new jsPDF()
+    const pageWidth = doc.internal.pageSize.width
+    const pageHeight = doc.internal.pageSize.height
+    const margin = 20
 
-    // Add title
+    // Adicionar cor de fundo
+    doc.setFillColor(240, 240, 240)
+    doc.rect(0, 0, pageWidth, pageHeight, 'F')
+
+    // Adicionar cabeçalho
+    doc.setFillColor(53, 162, 235)
+    doc.rect(0, 0, pageWidth, 40, 'F')
+    doc.setTextColor(255, 255, 255)
+    doc.setFontSize(24)
+    doc.text('Relatório de Vendas e Estoque', margin, 30)
+
+    // Adicionar data
+    doc.setTextColor(100, 100, 100)
+    doc.setFontSize(12)
+    doc.text(`Gerado em: ${new Date().toLocaleDateString()}`, pageWidth - margin, 50, { align: 'right' })
+
+    // Adicionar cards de resumo
+    const addCard = (title: string, value: string, x: number) => {
+      doc.setFillColor(255, 255, 255)
+      doc.roundedRect(x, 60, 50, 40, 3, 3, 'F')
+      doc.setTextColor(50, 50, 50)
+      doc.setFontSize(10)
+      doc.text(title, x + 5, 75, { maxWidth: 40 })
+      doc.setFontSize(14)
+      doc.setTextColor(0, 0, 0)
+      doc.text(value, x + 5, 92)
+    }
+
+    addCard('Total de Vendas, Ultimos 30 Dias', 'R$ 15.231,00', margin)
+    addCard('Produtos em Estoque no Total', '1.234', margin + 60)
+    addCard('Produtos com Baixo Estoque', '23', margin + 120)
+
+    // Adicionar dados de vendas
     doc.setFontSize(18)
-    doc.text('Relatório de Vendas e Estoque', 14, 22)
-
-    // Add date
-    doc.setFontSize(11)
-    doc.text(`Data: ${new Date().toLocaleDateString()}`, 14, 30)
-
-    // Add sales data
-    doc.setFontSize(14)
-    doc.text('Vendas dos Últimos 6 Meses', 14, 40)
+    doc.setTextColor(50, 50, 50)
+    doc.text('Vendas dos Últimos 6 Meses', margin, 120)
     const salesTableData = salesData.labels.map((month, index) => [
       month,
-      salesData.datasets[0].data[index]
+      Math.round(salesData.datasets[0].data[index]).toString()
     ])
     doc.autoTable({
-      startY: 45,
+      startY: 130,
       head: [['Mês', 'Vendas']],
       body: salesTableData,
+      theme: 'grid',
+      headStyles: { fillColor: [53, 162, 235], textColor: [255, 255, 255] },
+      styles: { cellPadding: 5, fontSize: 12 },
+      columnStyles: { 1: { halign: 'right' } },
     })
 
-    // Add stock data
-    doc.setFontSize(14)
-    doc.text('Estoque Atual', 14, doc.lastAutoTable.finalY + 20)
+    // Adicionar dados de estoque em uma nova página
+    doc.addPage()
+    doc.setFillColor(240, 240, 240)
+    doc.rect(0, 0, pageWidth, pageHeight, 'F')
+
+    doc.setFontSize(18)
+    doc.setTextColor(50, 50, 50)
+    doc.text('Produtos com Estoque Abaixo de 60', margin, 30)
     const stockTableData = stockData.labels.map((product, index) => [
       product,
       stockData.datasets[0].data[index]
     ])
     doc.autoTable({
-      startY: doc.lastAutoTable.finalY + 25,
+      startY: 40,
       head: [['Produto', 'Quantidade']],
       body: stockTableData,
+      theme: 'grid',
+      headStyles: { fillColor: [255, 99, 132], textColor: [255, 255, 255] },
+      styles: { cellPadding: 5, fontSize: 12 },
+      columnStyles: { 1: { halign: 'right' } },
     })
 
-    // Save the PDF
+    // Salvar o PDF
     doc.save('relatorio-vendas-estoque.pdf')
   }
 
@@ -170,7 +211,7 @@ export default function Dashboard() {
         <TabsContent value="sales">
           <Card>
             <CardHeader>
-              <CardTitle>Gráfico de Vendas</CardTitle>
+              <CardTitle>Gráfico de Vendas (MÊS)</CardTitle>
               <CardDescription>Últimos 6 meses</CardDescription>
             </CardHeader>
             <CardContent>
@@ -181,11 +222,11 @@ export default function Dashboard() {
         <TabsContent value="stock">
           <Card>
             <CardHeader>
-              <CardTitle>Gráfico de Estoque</CardTitle>
+              <CardTitle>Gráfico de Produtos com Estoque Abaixo de 60</CardTitle>
               <CardDescription>Top 5 produtos</CardDescription>
             </CardHeader>
             <CardContent>
-              <Line data={stockData} />
+              <Bar data={stockData} />
             </CardContent>
           </Card>
         </TabsContent>
