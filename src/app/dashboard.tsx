@@ -223,7 +223,7 @@ export default function Dashboard() {
         <TabsContent value="stock">
           <Card>
             <CardHeader>
-              <CardTitle>Gráfico de Produtos mais Vendidos no Mês Passado</CardTitle>
+              <CardTitle>Gráfico de Produtos Mais Vendidos no Mês Passado</CardTitle>
               <CardDescription>Top 5 produtos</CardDescription>
             </CardHeader>
             <CardContent>
