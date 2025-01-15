@@ -20,7 +20,7 @@
     "jspdf": "^2.5.2",
     "jspdf-autotable": "^3.8.4",
     "lucide-react": "^0.460.0",
-    "next": "15.0.3",
+    "next": "^15.1.4",
     "react": "^18.2.0",
     "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.2.0",
